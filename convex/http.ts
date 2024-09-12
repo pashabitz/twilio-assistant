@@ -1,4 +1,4 @@
-import twilio from "./twilio";
+import twilio from "./assistant";
 import { httpRouter } from "convex/server";
 
 const http = httpRouter();

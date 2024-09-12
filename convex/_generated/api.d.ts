@@ -10,8 +10,8 @@
  * @module
  */
 
+import type * as assistant from "../assistant.js";
 import type * as http from "../http.js";
-import type * as twilio from "../twilio.js";
 
 import type {
   ApiFromModules,
@@ -27,8 +27,8 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  assistant: typeof assistant;
   http: typeof http;
-  twilio: typeof twilio;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 

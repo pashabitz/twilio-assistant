@@ -11,7 +11,7 @@ const twilio = new Twilio(
     {
         default_from: process.env.TWILIO_PHONE_NUMBER || "",
         incoming_message_callback: async (ctx, message) => {
-            await ctx.runAction(api.twilio.getCompletionForIncomingMessage, { from: message.From });
+            await ctx.runAction(api.assistant.getCompletionForIncomingMessage, { from: message.From });
         }
     }
 );
