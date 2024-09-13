@@ -73,16 +73,6 @@ const makeCompletionMessages = (incomingMessages: any[], outgoingMessages: any[]
     });
 };
 
-export const sendSms = internalAction({
-    args: {
-        to: v.string(),
-        body: v.string(),
-    },
-    handler: async (ctx, args) => {
-        return await twilio.sendMessage(ctx, args);
-    },
-});
-
 export const registerIncomingSmsHandler = internalAction({
     args: {},
     handler: async (ctx) => {
