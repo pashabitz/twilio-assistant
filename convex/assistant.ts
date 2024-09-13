@@ -19,30 +19,6 @@ const twilio = new Twilio(
 export default twilio;
 
 
-const makeCompletionMessages = (incomingMessages: any[], outgoingMessages: any[]) => {
-    return incomingMessages.map((m: any) => {
-        return {
-            role: "user",
-            content: m.Body,
-            _creationTime: m._creationTime,
-        };
-    })
-    .concat(outgoingMessages.map((m: any) => {
-        return {
-            role: "assistant",
-            content: m.body.replace(/Sent from your Twilio trial account - /, ""),
-            _creationTime: m._creationTime,
-        };
-    }))
-    .sort((a: any, b: any) => {
-        return a._creationTime - b._creationTime;
-    })
-    .map((m: any) => {
-        delete m._creationTime;
-        return m;
-    });
-};
-
 export const respondToIncomingMessage = action({
     args: {
         from: v.string(),
@@ -73,14 +49,29 @@ export const respondToIncomingMessage = action({
     }
 })
 
-export const registerIncomingSmsHandler = internalAction({
-    args: {},
-    handler: async (ctx) => {
-        return await twilio.registerIncomingSmsHandler(ctx, {
-        sid: process.env.TWILIO_PHONE_NUMBER_SID || "",
-        });
-    },
-});
+const makeCompletionMessages = (incomingMessages: any[], outgoingMessages: any[]) => {
+    return incomingMessages.map((m: any) => {
+        return {
+            role: "user",
+            content: m.Body,
+            _creationTime: m._creationTime,
+        };
+    })
+    .concat(outgoingMessages.map((m: any) => {
+        return {
+            role: "assistant",
+            content: m.body.replace(/Sent from your Twilio trial account - /, ""),
+            _creationTime: m._creationTime,
+        };
+    }))
+    .sort((a: any, b: any) => {
+        return a._creationTime - b._creationTime;
+    })
+    .map((m: any) => {
+        delete m._creationTime;
+        return m;
+    });
+};
 
 export const sendSms = internalAction({
     args: {
@@ -89,5 +80,14 @@ export const sendSms = internalAction({
     },
     handler: async (ctx, args) => {
         return await twilio.sendMessage(ctx, args);
+    },
+});
+
+export const registerIncomingSmsHandler = internalAction({
+    args: {},
+    handler: async (ctx) => {
+        return await twilio.registerIncomingSmsHandler(ctx, {
+        sid: process.env.TWILIO_PHONE_NUMBER_SID || "",
+        });
     },
 });
