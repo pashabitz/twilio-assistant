@@ -151,7 +151,41 @@ export type DatabaseReader = GenericDatabaseReader<DataModel>;
 export type DatabaseWriter = GenericDatabaseWriter<DataModel>;
 
 export declare const components: {
-  twilio: {
+  component: {
+    index: {
+      checkRateLimit: FunctionReference<
+        "query",
+        "internal",
+        {
+          count?: number;
+          key?: string;
+          name: string;
+          name2: string;
+          reserve?: boolean;
+          throws?: boolean;
+        },
+        { ok: boolean; retryAt?: number; ts?: number; value?: number }
+      >;
+      rateLimit: FunctionReference<
+        "mutation",
+        "internal",
+        {
+          count?: number;
+          key?: string;
+          name: string;
+          name2: string;
+          reserve?: boolean;
+          throws?: boolean;
+        },
+        { ok: boolean; retryAt?: number }
+      >;
+      resetRateLimit: FunctionReference<
+        "mutation",
+        "internal",
+        { key?: string; name: string },
+        any
+      >;
+    };
     messages: {
       create: FunctionReference<
         "action",
@@ -166,33 +200,73 @@ export declare const components: {
         },
         any
       >;
-      getBySid: FunctionReference<"query", "internal", { sid: string }, any>;
-      getByTo: FunctionReference<"query", "internal", { to: string }, any>;
-      getIncomingMessageBySid: FunctionReference<
+      getByCounterparty: FunctionReference<
         "query",
         "internal",
-        { sid: string },
+        { account_sid: string; counterparty: string },
         any
       >;
-      getIncomingMessagesByFrom: FunctionReference<
+      getBySid: FunctionReference<
         "query",
         "internal",
-        { from: string },
+        { account_sid: string; sid: string },
         any
       >;
-      insertIncoming: FunctionReference<
-        "mutation",
+      getFrom: FunctionReference<
+        "query",
         "internal",
-        { message: any },
+        { account_sid: string; from: string },
+        any
+      >;
+      getFromTwilioBySidAndInsert: FunctionReference<
+        "action",
+        "internal",
+        { account_sid: string; auth_token: string; sid: string },
+        any
+      >;
+      getTo: FunctionReference<
+        "query",
+        "internal",
+        { account_sid: string; to: string },
         any
       >;
       list: FunctionReference<
         "query",
         "internal",
         { account_sid: string },
-        any
+        Array<{
+          _creationTime: number;
+          _id: string;
+          account_sid: string;
+          api_version: string;
+          body: string;
+          counterparty?: string;
+          date_created: string;
+          date_sent: string | null;
+          date_updated: string | null;
+          direction: string;
+          error_code: number | null;
+          error_message: string | null;
+          from: string;
+          messaging_service_sid: string | null;
+          num_media: string;
+          num_segments: string;
+          price: string | null;
+          price_unit: string | null;
+          sid: string;
+          status: string;
+          subresource_uris: { feedback?: string; media: string } | null;
+          to: string;
+          uri: string;
+        }>
       >;
       listIncoming: FunctionReference<
+        "query",
+        "internal",
+        { account_sid: string },
+        any
+      >;
+      listOutgoing: FunctionReference<
         "query",
         "internal",
         { account_sid: string },
@@ -201,12 +275,7 @@ export declare const components: {
       updateStatus: FunctionReference<
         "mutation",
         "internal",
-        {
-          account_sid: string;
-          auth_token: string;
-          sid: string;
-          status: string;
-        },
+        { account_sid: string; sid: string; status: string },
         any
       >;
     };
@@ -215,12 +284,6 @@ export declare const components: {
         "action",
         "internal",
         { account_sid: string; auth_token: string; number: string },
-        any
-      >;
-      getByPhoneNumber: FunctionReference<
-        "action",
-        "internal",
-        { account_sid: string; auth_token: string; phone_number: string },
         any
       >;
       updateSmsUrl: FunctionReference<

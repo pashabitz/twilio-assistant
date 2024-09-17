@@ -1,8 +1,8 @@
 {
   "dependencies": {
+    "@get-convex/twilio": "file:../twilio_component/get-convex-twilio-0.0.6.tgz",
     "@types/node": "^22.5.4",
     "convex": "^1.15.1-alpha.3",
-    "openai": "^4.60.0",
-    "twilio_component": "file:../twilio_component/twilio_component-0.0.5.tgz"
+    "openai": "^4.60.0"
   }
 }
