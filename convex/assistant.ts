@@ -1,29 +1,25 @@
-import twilioClient from "@get-convex/twilio";
-import { action, components, internalAction } from "./_generated/server.js";
+import { Twilio, messageValidator } from "@get-convex/twilio";
+import { components, internalAction, internalMutation } from "./_generated/server.js";
 import { v } from "convex/values";
-import { api } from "./_generated/api.js"
+import { internal } from "./_generated/api.js"
 import OpenAI from "openai";
 const openai = new OpenAI();
 
-const twilio = twilioClient(
-    components.component,
+const twilio: any = new Twilio(
+    components.twilio,
     {
         default_from: process.env.TWILIO_PHONE_NUMBER || "",
-        incomingMessageCallback: async (ctx, message) => {
-            await ctx.runAction(api.assistant.respondToIncomingMessage, { from: message.from });
-        }
+        incomingMessageCallback: internal.assistant.scheduleCompletionAndResponse,
     }
 );
-
 export default twilio;
 
-
-export const respondToIncomingMessage = action({
+export const responseToIncomingMessage = internalAction({
     args: {
-        from: v.string(),
+        message: messageValidator,
     },
     handler: async (ctx, args) => {
-        const messages = await twilio.getMessagesByCounterparty(ctx, { counterparty: args.from });
+        const messages = await twilio.getMessagesByCounterparty(ctx, { counterparty: args.message.from });
         
         const completionMessages = makeCompletionMessages(messages);
 
@@ -41,12 +37,31 @@ export const respondToIncomingMessage = action({
         }
 
         const body = completion.choices[0].message.content!.substring(0, 1600);
-        return await twilio.sendMessage(ctx, {
-            to: args.from,
+        await twilio.sendMessage(ctx, {
+            to: args.message.from,
             body,
         });
     }
-})
+});
+
+export const scheduleCompletionAndResponse = internalMutation({
+    args: {
+        message: messageValidator,
+    },
+    handler: async (ctx, args) => {
+        await ctx.scheduler.runAfter(0, internal.assistant.responseToIncomingMessage, args);
+    }
+});
+
+export const sendMessage = internalAction({
+    args: {
+        to: v.string(),
+        body: v.string(),
+    },
+    handler: async (ctx, args) => {
+        return await twilio.sendMessage(ctx, args);
+    },
+});
 
 const makeCompletionMessages = (messages: any[]) => {
     return messages.map((m: any) => {
