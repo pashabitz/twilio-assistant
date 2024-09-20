@@ -1,7 +1,7 @@
-import { Twilio, messageValidator } from "@get-convex/twilio";
-import { components, internalAction, internalMutation } from "./_generated/server.js";
+import { Twilio, messageValidator } from "@convex-dev/twilio";
+import { internalAction, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
-import { internal } from "./_generated/api.js"
+import { internal, components } from "./_generated/api.js"
 import OpenAI from "openai";
 const openai = new OpenAI();
 
